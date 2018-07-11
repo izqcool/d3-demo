@@ -19,6 +19,9 @@ export class App extends React.Component {
     return (
         <div className={styles.container}>
           <SideBar history={history}/>
+          <div className={styles.right}>
+            dasdasd
+          </div>
         </div>
     );
   }

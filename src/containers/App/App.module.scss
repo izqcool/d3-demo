@@ -6,4 +6,9 @@
   right: 0;
   bottom: 0;
   left: 0;
+  .right {
+    position: relative;
+    width: calc(100% - 180px);
+    height: 100%;
+  }
 }
