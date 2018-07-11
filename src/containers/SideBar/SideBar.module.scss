@@ -1,0 +1,36 @@
+.container {
+  box-sizing: border-box;
+  width: 180px;
+  //padding: 10px 20px;
+  z-index: 3;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background-color: #f9f9fb;
+  .nav {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    box-sizing: border-box;
+    padding-left: 20px;
+    width: 100%;
+    line-height: 40px;
+    color: #000;
+    text-decoration: none;
+    transition: all .3s ease-in-out;
+    img {
+      display: block;
+      border: none;
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
+    }
+    &:hover {
+      background-color: #9E2649;
+    }
+  }
+  .active {
+    background-color: #9E2649;
+    color: #fff;
+  }
+}
