@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "custom-react-scripts": "0.2.2",
+    "d3": "^5.5.0",
     "hint.css": "^2.5.0",
     "normalize.css": "^8.0.0",
     "prop-types": "^15.6.2",

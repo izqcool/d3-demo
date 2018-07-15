@@ -4,6 +4,7 @@ import {Route} from 'react-router-dom';
 import * as styles from './App.module.scss';
 
 import {SideBar} from '../SideBar';
+import {Histogram} from '../Histogram';
 
 
 export class App extends React.Component {
@@ -20,7 +21,7 @@ export class App extends React.Component {
         <div className={styles.container}>
           <SideBar history={history}/>
           <div className={styles.right}>
-            dasdasd
+            <Route path="/" component={Histogram}/>
           </div>
         </div>
     );

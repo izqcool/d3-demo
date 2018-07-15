@@ -61,14 +61,13 @@ export class SideBar extends React.Component {
 
   render() {
     const navs = this.getNavs();
-    console.log(navs);
     return (
         <div className={styles.container}>
           <div className={styles.navs}>
             {
-              navs.map((nav)=>{
+              navs.map((nav,i)=>{
                 return (
-                    <div className={styles.nav_list}>
+                    <div className={styles.nav_list} key={i}>
                       {this.getComponent(nav)}
                     </div>
                 )
