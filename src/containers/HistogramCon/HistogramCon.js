@@ -15,7 +15,48 @@ export class HistogramCon extends React.Component {
   }
 
   _render() {
-    const data = [1,2,3,4,5,5,76,87,2,32,12,43,54,65,23,21,35,65,2,53,66,42,32,42];
+    const data = [
+      {
+        x1: 0,
+        x2: 5,
+        y:10
+      },
+      {
+        x1: 5,
+        x2: 8,
+        y:6
+      },
+      {
+        x1: 8,
+        x2: 15,
+        y:27
+      },
+      {
+        x1: 15,
+        x2: 20,
+        y:23
+      },
+      {
+        x1: 20,
+        x2: 25,
+        y:8
+      },
+      {
+        x1: 20,
+        x2: 25,
+        y:13
+      },
+      {
+        x1: 25,
+        x2: 30,
+        y:16
+      },
+      {
+        x1: 30,
+        x2: 35,
+        y:18
+      },
+    ];
     const dom = document.querySelector(`.${styles.chartWrapper}`);
     const histogram = new Histogram({
       dom,
@@ -27,7 +68,9 @@ export class HistogramCon extends React.Component {
         right: 40,
         top: 30,
         bottom: 30
-      }
+      },
+      isRange: true
+
     });
     histogram.render();
   }
