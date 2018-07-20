@@ -6,6 +6,8 @@ import * as styles from './Histogram.module.scss';
 export class Histogram extends React.Component {
   oldStartColor = null;
   oldEndColor = null;
+  ranged = null;
+  oldData = null;
   constructor(props) {
     super(props);
     this.state = {
@@ -33,23 +35,34 @@ export class Histogram extends React.Component {
   // }
 
   shouldComponentUpdate(nextProps) {
-    if(nextProps.colorStart !== this.oldStartColor) {
-      this.reSetColor(nextProps.colorStart,nextProps.colorEnd);
+    if(nextProps.colorStart !== this.oldStartColor && nextProps.isRange === this.ranged) {
       this.oldStartColor = nextProps.colorStart;
       this.oldEndColor = nextProps.colorEnd;
+      this.reSetColor(nextProps.colorStart,nextProps.colorEnd);
+      return false
+    }else if(nextProps.isRange !== this.ranged) {
+      this.ranged = nextProps.isRange;
+      this.oldData = nextProps.data;
+      this.drawHistogram(nextProps.data);
+
+      return true;
     }
 
     return false;
+
   }
 
   componentDidMount() {
-    this.drawHistogram();
+    const {data} = this.props;
+    this.drawHistogram(data);
   }
 
   init() {
-    const {colorStart, colorEnd} = this.props;
+    const {colorStart, colorEnd, isRange, data} = this.props;
     this.oldStartColor = colorStart;
     this.oldEndColor = colorEnd;
+    this.ranged = isRange;
+    this.oldData = data;
   }
 
 
@@ -65,10 +78,6 @@ export class Histogram extends React.Component {
 
     d3.selectAll('.rect')
       .each(function (d,i) {
-        // console.log(d);
-        // const _index = _.findIndex(ascData,(ele,i)=>{
-        //   return d.y===ele.y && d.x1 === ele.x1;
-        // });
         const _index = _this.findColorIndex(d);
         d3.select(this).transition()
           .duration(90)
@@ -78,7 +87,7 @@ export class Histogram extends React.Component {
   }
 
   findColorIndex(d) {
-    const {data} = this.props;
+    const data = this.oldData;
 
     //升序数组
     const ascData = _.sortBy(data,(ele) => ele.y);
@@ -90,18 +99,16 @@ export class Histogram extends React.Component {
 
   }
 
-  drawHistogram() {
-    let {data, width, height, margin, isRange} = this.props;
+  drawHistogram(data) {
+    let {width, height, margin, isRange} = this.props;
     const _this = this;
-
     const {oldStartColor, oldEndColor} = this;
+
     //clean this canvas
     d3.select(`.${styles.histogram}`).selectAll('*').remove();
 
-    // const colors = d3.scaleOrdinal(['#5A2999','red','#A2F14A']);
     const colors = d3.scaleLinear().domain([0, data.length-1]).range([oldStartColor,oldEndColor]);
 
-    // const min = d3.min(data, ele => ele.y);
     const max = d3.max(data, ele => ele.y);
 
     //add canvas(svg)
@@ -142,7 +149,21 @@ export class Histogram extends React.Component {
       .attr('x',0.5)
       .attr('y',9)
       .attr('dy','0.75em')
-      .text(_.last(data.x2))
+      .text(_.last(data.x2));
+
+      //在X轴上等分每个区间
+      g.selectAll('.xAxis .tick')
+      .each(function (d,i) {
+        d3.select(this).attr('transform',()=>{
+          let xWidth = 0;
+          if(i===0) {
+            xWidth = 0;
+          }else {
+            xWidth = xScale.paddingOuter() * xScale.step() + (i - 1) * xScale.step() + xScale.bandwidth() + (xScale.paddingInner() * xScale.step())/2;
+          }
+          return `translate(${xWidth},0)`
+        });
+      });
     }
 
     g.selectAll('.rect')
@@ -160,26 +181,14 @@ export class Histogram extends React.Component {
     .attr('height',0);
 
 
-    //在X轴上等分每个区间
-    g.selectAll('.xAxis .tick')
-    .each(function (d,i) {
-      d3.select(this).attr('transform',()=>{
-        let xWidth = 0;
-        if(i===0) {
-          xWidth = 0;
-        }else {
-          xWidth = xScale.paddingOuter() * xScale.step() + (i - 1) * xScale.step() + xScale.bandwidth() + (xScale.paddingInner() * xScale.step())/2;
-        }
-        return `translate(${xWidth},0)`
-      });
-    });
+
 
     g.selectAll('rect')
     .transition()
     .duration(500)
-    // .attr('height', d=> _height - yScale(d.y))
     .attr('height', d=> _height - yScale(d.y))
     .attr('y', d=>yScale(d.y));
+
   }
 
   render() {

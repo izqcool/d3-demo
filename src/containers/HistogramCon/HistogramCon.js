@@ -94,7 +94,50 @@ const rangeData = [
     x1: 80,
     x2: 85,
     y:61
+  }
+];
+
+const notRangeData= [
+  {
+    x1: '草莓',
+    y: 20
   },
+  {
+    x1: '香蕉',
+    y: 39
+  },
+  {
+    x1: '菠萝',
+    y: 42
+  },
+  {
+    x1: '西瓜',
+    y: 54
+  },
+  {
+    x1: '苹果',
+    y: 52
+  },
+  {
+    x1: '樱桃',
+    y: 12
+  },
+  {
+    x1: '石榴',
+    y: 85
+  },
+  {
+    x1: '荔枝',
+    y: 124
+  },
+  {
+    x1: '芒果',
+    y: 56
+  },
+  {
+    x1: '榴莲',
+    y: 96
+  }
 ];
 
 export class HistogramCon extends React.Component {
@@ -103,6 +146,7 @@ export class HistogramCon extends React.Component {
     super(props);
     this.state = {
       data: rangeData,
+      tabName: '分区间',
       isRange: true,
       activeItem: 'GREEN',
       colorStart: '#F5FEAB',
@@ -110,6 +154,7 @@ export class HistogramCon extends React.Component {
     };
     this.getBtnItems = this.getBtnItems.bind(this);
     this.onClickBtn = this.onClickBtn.bind(this);
+    this.onClickTab = this.onClickTab.bind(this);
   }
 
   getBtnItems() {
@@ -161,7 +206,7 @@ export class HistogramCon extends React.Component {
     ];
 
     const items = [
-        ...(!isRange ? [notRangeItem]: []),
+        ...(!isRange ? notRangeItem: []),
         ...commonsItem
     ];
 
@@ -171,6 +216,8 @@ export class HistogramCon extends React.Component {
         active: activeItem === item.type
       }
     });
+
+
 
   }
 
@@ -211,8 +258,20 @@ export class HistogramCon extends React.Component {
 
   }
 
+  onClickTab() {
+    const {isRange} = this.state;
+    this.setState({
+      isRange: !isRange,
+      tabName: isRange ? '不分区间' : '分区间',
+      data: isRange ? notRangeData : rangeData
+    });
+
+  }
+
+
+
   render() {
-    const {data, isRange,colorStart,colorEnd} = this.state;
+    const {data, isRange,colorStart,colorEnd,tabName} = this.state;
     const items = this.getBtnItems();
     const props = {
       data,
@@ -231,6 +290,7 @@ export class HistogramCon extends React.Component {
     return (
         <div className={styles.container}>
           <div className={styles.btn}>
+            <div className={styles.btn_items} onClick={this.onClickTab}>{tabName}</div>
             {
               items.map((item,i)=>{
                 return <button key={i}
