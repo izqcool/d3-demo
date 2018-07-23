@@ -43,18 +43,17 @@ export class Histogram extends React.Component {
     }else if(nextProps.isRange !== this.ranged) {
       this.ranged = nextProps.isRange;
       this.oldData = nextProps.data;
-      this.drawHistogram(nextProps.data);
-
+      this.drawHistogram(nextProps.data,nextProps.isRange);
       return true;
+    }else {
+      return false;
     }
-
-    return false;
 
   }
 
   componentDidMount() {
-    const {data} = this.props;
-    this.drawHistogram(data);
+    const {data,isRange} = this.props;
+    this.drawHistogram(data,isRange);
   }
 
   init() {
@@ -99,8 +98,8 @@ export class Histogram extends React.Component {
 
   }
 
-  drawHistogram(data) {
-    let {width, height, margin, isRange} = this.props;
+  drawHistogram(data,isRange) {
+    let {width, height, margin} = this.props;
     const _this = this;
     const {oldStartColor, oldEndColor} = this;
 

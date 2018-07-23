@@ -1,4 +1,5 @@
 import React from 'react';
+import * as _ from 'lodash';
 import * as styles from './HistogramCon.module.scss';
 
 import {Histogram} from './Histogram';
@@ -155,6 +156,7 @@ export class HistogramCon extends React.Component {
     this.getBtnItems = this.getBtnItems.bind(this);
     this.onClickBtn = this.onClickBtn.bind(this);
     this.onClickTab = this.onClickTab.bind(this);
+    this.resetData = this.resetData.bind(this);
   }
 
   getBtnItems() {
@@ -195,7 +197,7 @@ export class HistogramCon extends React.Component {
       },
       {
         type: 'Y ASC',
-        clickEvent: ()=>this.onClickBtn('COOL'),
+        clickEvent: ()=>this.onClickBtn('Y ASC'),
         active: false,
       },
       {
@@ -219,6 +221,17 @@ export class HistogramCon extends React.Component {
 
 
 
+  }
+
+  resetData(type) {
+    const {data} = this.state;
+    let newData;
+    switch (type) {
+      case 'Y ASC':
+        newData = _.sortBy(data, (item)=>{return item.y});
+        break;
+    }
+    return newData;
   }
 
   onClickBtn(type) {
@@ -252,6 +265,15 @@ export class HistogramCon extends React.Component {
           activeItem: 'COOL',
           colorStart: '#5A2999',
           colorEnd: '#27E287'
+        });
+        break;
+
+      case 'Y ASC':
+        this.setState({
+          data: this.resetData('Y ASC')
+          // activeItem: 'COOL',
+          // colorStart: '#5A2999',
+          // colorEnd: '#27E287'
         });
         break;
     }
