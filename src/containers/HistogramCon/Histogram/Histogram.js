@@ -15,8 +15,10 @@ export class Histogram extends React.Component {
     };
     this.init = this.init.bind(this);
     this.drawHistogram = this.drawHistogram.bind(this);
-    this.reSetColor = this.reSetColor.bind(this);
+    this.resetColor = this.resetColor.bind(this);
+    this.resetPos = this.resetPos.bind(this);
     this.findColorIndex = this.findColorIndex.bind(this);
+    this.findIndex = this.findIndex.bind(this);
     this.init();
   }
 
@@ -35,16 +37,19 @@ export class Histogram extends React.Component {
   // }
 
   shouldComponentUpdate(nextProps) {
+    console.log(nextProps);
     if(nextProps.colorStart !== this.oldStartColor && nextProps.isRange === this.ranged) {
       this.oldStartColor = nextProps.colorStart;
       this.oldEndColor = nextProps.colorEnd;
-      this.reSetColor(nextProps.colorStart,nextProps.colorEnd);
+      this.resetColor(nextProps.colorStart,nextProps.colorEnd);
       return false
     }else if(nextProps.isRange !== this.ranged) {
       this.ranged = nextProps.isRange;
       this.oldData = nextProps.data;
       this.drawHistogram(nextProps.data,nextProps.isRange);
       return true;
+    }else if(nextProps.data[0].y !== this.oldData[0].y) {
+      this.resetPos(this.oldData,nextProps.data);
     }else {
       return false;
     }
@@ -65,7 +70,7 @@ export class Histogram extends React.Component {
   }
 
 
-  reSetColor(start,end) {
+  resetColor(start,end) {
     const {data} = this.props;
     const _this = this;
 
@@ -73,7 +78,6 @@ export class Histogram extends React.Component {
     const ascData = _.sortBy(data,(ele) => ele.y);
 
     const newColors = d3.scaleLinear().domain([0, data.length-1]).range([start,end]);
-    const g = d3.select('.canvas_g');
 
     d3.selectAll('.rect')
       .each(function (d,i) {
@@ -83,6 +87,35 @@ export class Histogram extends React.Component {
           .delay(i*40)
           .style('fill',newColors(_index));
       });
+  }
+
+  //
+  resetPos(oldData,newData) {
+    const _this = this;
+    const {width, margin} = this.props;
+    const _width = width - margin.left - margin.right;
+    const xScale = d3.scaleBand().range([0,_width]).padding(.4).domain(oldData.map(d =>d.x1));
+    const _xScale = d3.scaleBand().range([0,_width]).padding(.4).domain(newData.map(d =>d.x1));
+    const g = d3.select('.canvas_g');
+    console.log(d3.selectAll('rect'));
+
+    g.selectAll('rect')
+    .each(function (d,i) {
+      d3.select(this)
+        .transition()
+        .duration(800)
+        .attr('transform',()=>{
+
+          const _index = _this.findIndex(d,newData);
+          const xWidth = xScale(d.x1);
+          const _xWidth = _xScale(newData[_index].x1);
+          const moveX =  _xWidth - xWidth;
+          console.log(moveX);
+
+          return `translate(${moveX},0)`
+        });
+    });
+
   }
 
   findColorIndex(d) {
@@ -95,8 +128,21 @@ export class Histogram extends React.Component {
       return d.y===ele.y && d.x1 === ele.x1;
     });
     return index;
-
   }
+
+  findIndex(d, data) {
+    console.log(d);
+    console.log(data);
+    //升序数组
+    // const ascData = _.sortBy(data,(ele) => ele.y);
+
+    const index = _.findIndex(data,(ele,i)=>{
+      return d.y===ele.y && d.x1 === ele.x1;
+    });
+    return index;
+  }
+
+
 
   drawHistogram(data,isRange) {
     let {width, height, margin} = this.props;
@@ -163,6 +209,7 @@ export class Histogram extends React.Component {
           return `translate(${xWidth},0)`
         });
       });
+
     }
 
     g.selectAll('.rect')
