@@ -37,7 +37,6 @@ export class Histogram extends React.Component {
   // }
 
   shouldComponentUpdate(nextProps) {
-    console.log(nextProps);
     if(nextProps.colorStart !== this.oldStartColor && nextProps.isRange === this.ranged) {
       this.oldStartColor = nextProps.colorStart;
       this.oldEndColor = nextProps.colorEnd;
@@ -49,7 +48,9 @@ export class Histogram extends React.Component {
       this.drawHistogram(nextProps.data,nextProps.isRange);
       return true;
     }else if(nextProps.data[0].y !== this.oldData[0].y) {
-      this.resetPos(this.oldData,nextProps.data);
+      const originOldData = this.oldData;
+      this.oldData = nextProps.data;
+      this.resetPos(originOldData,nextProps.data);
     }else {
       return false;
     }
@@ -71,8 +72,10 @@ export class Histogram extends React.Component {
 
 
   resetColor(start,end) {
-    const {data} = this.props;
+    const {isRange,isSort,data} = this.props;
     const _this = this;
+
+
 
     //升序数组
     const ascData = _.sortBy(data,(ele) => ele.y);
@@ -81,11 +84,24 @@ export class Histogram extends React.Component {
 
     d3.selectAll('.rect')
       .each(function (d,i) {
-        const _index = _this.findColorIndex(d);
+        const colorIndex = _this.findColorIndex(d);
+        let delayIndex;
+        if(isRange) {
+          delayIndex = i;
+        }else {
+          if(isSort) {
+            delayIndex = colorIndex;
+          }else {
+            delayIndex = i;
+          }
+        }
+        console.log(delayIndex);
+        // console.log(i);
+        // console.log(_index);
         d3.select(this).transition()
-          .duration(90)
-          .delay(i*40)
-          .style('fill',newColors(_index));
+          .duration(50)
+          .delay(delayIndex*50)
+          .style('fill',newColors(colorIndex));
       });
   }
 
@@ -103,7 +119,7 @@ export class Histogram extends React.Component {
     .each(function (d,i) {
       d3.select(this)
         .transition()
-        .duration(800)
+        .duration(1400)
         .attr('transform',()=>{
 
           const _index = _this.findIndex(d,newData);
@@ -131,8 +147,6 @@ export class Histogram extends React.Component {
   }
 
   findIndex(d, data) {
-    console.log(d);
-    console.log(data);
     //升序数组
     // const ascData = _.sortBy(data,(ele) => ele.y);
 

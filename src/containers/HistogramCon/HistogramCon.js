@@ -149,6 +149,7 @@ export class HistogramCon extends React.Component {
       data: rangeData,
       tabName: '分区间',
       isRange: true,
+      isSort: false,
       activeItem: 'GREEN',
       colorStart: '#F5FEAB',
       colorEnd: '#2A9543'
@@ -270,9 +271,8 @@ export class HistogramCon extends React.Component {
 
       case 'Y ASC':
         this.setState({
-          data: this.resetData('Y ASC')
-          // activeItem: 'COOL',
-          // colorStart: '#5A2999',
+          data: this.resetData('Y ASC'),
+          isSort: true
           // colorEnd: '#27E287'
         });
         break;
@@ -281,9 +281,10 @@ export class HistogramCon extends React.Component {
   }
 
   onClickTab() {
-    const {isRange} = this.state;
+    const {isRange,isSort} = this.state;
     this.setState({
       isRange: !isRange,
+      isSort: false,
       tabName: isRange ? '不分区间' : '分区间',
       data: isRange ? notRangeData : rangeData
     });
@@ -293,7 +294,7 @@ export class HistogramCon extends React.Component {
 
 
   render() {
-    const {data, isRange,colorStart,colorEnd,tabName} = this.state;
+    const {data, isRange,colorStart,colorEnd,tabName,isSort} = this.state;
     const items = this.getBtnItems();
     const props = {
       data,
@@ -306,6 +307,7 @@ export class HistogramCon extends React.Component {
         bottom: 30
       },
       isRange,
+      isSort,
       colorStart,
       colorEnd
     };
