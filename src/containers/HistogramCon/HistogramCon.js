@@ -193,7 +193,7 @@ export class HistogramCon extends React.Component {
       },
       {
         type: 'X DESC',
-        clickEvent: ()=>this.onClickBtn('COOL'),
+        clickEvent: ()=>this.onClickBtn('X DESC'),
         active: false,
       },
       {
@@ -203,7 +203,7 @@ export class HistogramCon extends React.Component {
       },
       {
         type: 'Y DESC',
-        clickEvent: ()=>this.onClickBtn('COOL'),
+        clickEvent: ()=>this.onClickBtn('Y DESC'),
         active: false,
       },
     ];
@@ -228,8 +228,20 @@ export class HistogramCon extends React.Component {
     const {data} = this.state;
     let newData;
     switch (type) {
+      case 'X ASC':
+        newData = _.sortBy(data, (item)=>{return item.x1});
+        break;
+
+      case 'X DESC':
+        newData = _.sortBy(data, (item)=>{return -item.x1});
+        break;
+
       case 'Y ASC':
         newData = _.sortBy(data, (item)=>{return item.y});
+        break;
+
+      case 'Y DESC':
+        newData = _.sortBy(data, (item)=>{return -item.y});
         break;
     }
     return newData;
@@ -269,11 +281,31 @@ export class HistogramCon extends React.Component {
         });
         break;
 
+      case 'X ASC':
+        this.setState({
+          data: this.resetData('X ASC'),
+          isSort: true
+        });
+        break;
+
+      case 'X DESC':
+        this.setState({
+          data: this.resetData('X DESC'),
+          isSort: true
+        });
+        break;
+
       case 'Y ASC':
         this.setState({
           data: this.resetData('Y ASC'),
           isSort: true
-          // colorEnd: '#27E287'
+        });
+        break;
+
+      case 'Y DESC':
+        this.setState({
+          data: this.resetData('Y DESC'),
+          isSort: true
         });
         break;
     }

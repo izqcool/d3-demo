@@ -8,6 +8,7 @@ export class Histogram extends React.Component {
   oldEndColor = null;
   ranged = null;
   oldData = null;
+  translateArr = null;
   constructor(props) {
     super(props);
     this.state = {
@@ -48,9 +49,9 @@ export class Histogram extends React.Component {
       this.drawHistogram(nextProps.data,nextProps.isRange);
       return true;
     }else if(nextProps.data[0].y !== this.oldData[0].y) {
-      const originOldData = this.oldData;
-      this.oldData = nextProps.data;
-      this.resetPos(originOldData,nextProps.data);
+      // const originOldData = this.oldData;
+      this.resetPos(this.oldData,nextProps.data);
+      return false;
     }else {
       return false;
     }
@@ -95,9 +96,6 @@ export class Histogram extends React.Component {
             delayIndex = i;
           }
         }
-        console.log(delayIndex);
-        // console.log(i);
-        // console.log(_index);
         d3.select(this).transition()
           .duration(50)
           .delay(delayIndex*50)
@@ -113,7 +111,6 @@ export class Histogram extends React.Component {
     const xScale = d3.scaleBand().range([0,_width]).padding(.4).domain(oldData.map(d =>d.x1));
     const _xScale = d3.scaleBand().range([0,_width]).padding(.4).domain(newData.map(d =>d.x1));
     const g = d3.select('.canvas_g');
-    console.log(d3.selectAll('rect'));
 
     g.selectAll('rect')
     .each(function (d,i) {
@@ -121,15 +118,29 @@ export class Histogram extends React.Component {
         .transition()
         .duration(1400)
         .attr('transform',()=>{
-
           const _index = _this.findIndex(d,newData);
           const xWidth = xScale(d.x1);
           const _xWidth = _xScale(newData[_index].x1);
           const moveX =  _xWidth - xWidth;
-          console.log(moveX);
-
-          return `translate(${moveX},0)`
+          return `translate(${moveX},0)`;
         });
+    });
+
+
+
+    g.selectAll('.x-tick')
+    .each(function (d,i) {
+      d3.select(this)
+      .transition()
+      .duration(1400)
+      .attr('transform',()=>{
+        const _index = _this.findIndex(oldData[i],newData);
+        const xWidth = xScale(oldData[i].x1);
+        const _xWidth = _xScale(newData[_index].x1);
+        const moveX =  _xWidth - xWidth;
+        const posX = _this.translateArr[i] + moveX;
+        return `translate(${posX},0)`;
+      });
     });
 
   }
@@ -147,9 +158,6 @@ export class Histogram extends React.Component {
   }
 
   findIndex(d, data) {
-    //升序数组
-    // const ascData = _.sortBy(data,(ele) => ele.y);
-
     const index = _.findIndex(data,(ele,i)=>{
       return d.y===ele.y && d.x1 === ele.x1;
     });
@@ -194,6 +202,8 @@ export class Histogram extends React.Component {
     .attr('transform',`translate(0,${_height})`)
     .call(xBar);
 
+    g.selectAll('.xAxis').selectAll('.tick').attr('class','x-tick');
+
     g.append('g')
     .attr('class',`yAxis ${styles.axis}`)
     .call(yBar);
@@ -224,6 +234,18 @@ export class Histogram extends React.Component {
         });
       });
 
+    }
+
+    //记录x-tick 的初始位置
+    if(!isRange) {
+      let initPosArr = [];
+      g.selectAll('.x-tick')
+      .each(function (d,i) {
+        const transValue = d3.select(this).attr("transform");
+        const translateX = parseFloat(transValue.match(/translate\((.*)\)/)[1].split(',')[0]);
+        initPosArr.push(translateX);
+      });
+      this.translateArr = initPosArr;
     }
 
     g.selectAll('.rect')
