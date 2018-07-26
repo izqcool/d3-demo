@@ -25,20 +25,6 @@ export class Histogram extends React.Component {
     this.init();
   }
 
-
-  // init(options) {
-  //   this.dom = options.dom;
-  //   this.data = options.data;
-  //   this.width = options.width;
-  //   this.height = options.height;
-  //   this.margin = options.margin || {top:0, right:0, bottom:0, left: 0};
-  //   this.isRange = options.isRange || false;
-  //   this.xName = options.xName;
-  //   this.yName = options.yName;
-  //   this.colorStart = options.colorStart;
-  //   this.colorEnd = options.colorEnd;
-  // }
-
   shouldComponentUpdate(nextProps) {
     if(nextProps.colorStart !== this.oldStartColor && nextProps.isRange === this.ranged) {
       this.oldStartColor = nextProps.colorStart;
