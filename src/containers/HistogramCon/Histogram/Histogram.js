@@ -119,7 +119,7 @@ export class Histogram extends React.Component {
       d3.select(this)
       .transition()
       .duration(1400)
-      .attr('x',()=>{
+      .attr('transform',()=>{
         const _index = _this.findIndex(oldData[i],newData);
         const xWidth = xScale(oldData[i].x1);
         const _xWidth = _xScale(newData[_index].x1);
