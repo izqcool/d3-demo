@@ -9,6 +9,8 @@ export class Histogram extends React.Component {
   ranged = null;
   oldData = null;
   translateArr = null;
+
+  originData = null;
   constructor(props) {
     super(props);
     this.state = {
@@ -49,7 +51,6 @@ export class Histogram extends React.Component {
       this.drawHistogram(nextProps.data,nextProps.isRange);
       return true;
     }else if(nextProps.data[0].y !== this.oldData[0].y) {
-      // const originOldData = this.oldData;
       this.resetPos(this.oldData,nextProps.data);
       return false;
     }else {
@@ -73,32 +74,17 @@ export class Histogram extends React.Component {
 
 
   resetColor(start,end) {
-    const {isRange,isSort,data} = this.props;
+    const {data} = this.props;
     const _this = this;
-
-
-
-    //升序数组
-    const ascData = _.sortBy(data,(ele) => ele.y);
-
     const newColors = d3.scaleLinear().domain([0, data.length-1]).range([start,end]);
 
     d3.selectAll('.rect')
       .each(function (d,i) {
         const colorIndex = _this.findColorIndex(d);
-        let delayIndex;
-        if(isRange) {
-          delayIndex = i;
-        }else {
-          if(isSort) {
-            delayIndex = colorIndex;
-          }else {
-            delayIndex = i;
-          }
-        }
+        const _index = _this.findIndex(d,data);
         d3.select(this).transition()
           .duration(50)
-          .delay(delayIndex*50)
+          .delay(_index*50)
           .style('fill',newColors(colorIndex));
       });
   }
@@ -167,6 +153,9 @@ export class Histogram extends React.Component {
 
 
   drawHistogram(data,isRange) {
+    if(!isRange) {
+      this.originData = data;
+    }
     let {width, height, margin} = this.props;
     const _this = this;
     const {oldStartColor, oldEndColor} = this;
