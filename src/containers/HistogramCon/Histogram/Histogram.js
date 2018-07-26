@@ -89,7 +89,7 @@ export class Histogram extends React.Component {
       });
   }
 
-  //
+
   resetPos(oldData,newData) {
     const _this = this;
     const {width, margin} = this.props;
@@ -119,13 +119,27 @@ export class Histogram extends React.Component {
       d3.select(this)
       .transition()
       .duration(1400)
-      .attr('transform',()=>{
+      .attr('x',()=>{
         const _index = _this.findIndex(oldData[i],newData);
         const xWidth = xScale(oldData[i].x1);
         const _xWidth = _xScale(newData[_index].x1);
         const moveX =  _xWidth - xWidth;
         const posX = _this.translateArr[i] + moveX;
         return `translate(${posX},0)`;
+      });
+    });
+
+    g.selectAll('.y-value')
+    .each(function (d,i) {
+      d3.select(this)
+      .transition()
+      .duration(1400)
+      .attr('transform',()=>{
+        const _index = _this.findIndex(oldData[i],newData);
+        const xWidth = xScale(oldData[i].x1);
+        const _xWidth = _xScale(newData[_index].x1);
+        const moveX =  _xWidth - xWidth;
+        return `translate(${moveX},0)`;
       });
     });
 
@@ -153,10 +167,13 @@ export class Histogram extends React.Component {
 
 
   drawHistogram(data,isRange) {
+    //save the y position of text
+    let textPosY = [];
+
     if(!isRange) {
       this.originData = data;
     }
-    let {width, height, margin} = this.props;
+    let {width, height, margin, xName, yName} = this.props;
     const _this = this;
     const {oldStartColor, oldEndColor} = this;
 
@@ -210,7 +227,7 @@ export class Histogram extends React.Component {
       .text(_.last(data.x2));
 
       //在X轴上等分每个区间
-      g.selectAll('.xAxis .tick')
+      g.selectAll('.xAxis .x-tick')
       .each(function (d,i) {
         d3.select(this).attr('transform',()=>{
           let xWidth = 0;
@@ -237,30 +254,72 @@ export class Histogram extends React.Component {
       this.translateArr = initPosArr;
     }
 
+    //set axis name
+    g.append('text')
+      .attr('transform','rotate(-90)')
+      .attr('x',-_height/2)
+      .attr('y',-50)
+      .attr('dy','.75em')
+      .style('text-anchor','middle')
+      .style('font-size','14px')
+      .text(yName);
+
+    g.append('text')
+      .attr('x',_width/2)
+      .attr('y',_height + 30)
+      .attr('dy','.75em')
+      .style('text-anchor','middle')
+      .style('font-size','14px')
+      .text(xName);
+
+
     g.selectAll('.rect')
-    .data(data)
-    .enter()
-    .append('rect')
-    .attr('class','rect')
-    .attr('x', d=>xScale(d.x1))
-    .attr('y',_height)
-    .style('fill',(d,i)=> {
-      const _index = _this.findColorIndex(d);
-      return colors(_index);
-    })
-    .attr('width',xScale.bandwidth())
-    .attr('height',0);
-
-
-
+      .data(data)
+      .enter()
+      .append('rect')
+      .attr('class','rect')
+      .attr('x', d=>xScale(d.x1))
+      .attr('y',_height)
+      .style('fill',(d,i)=> {
+        const _index = _this.findColorIndex(d);
+        return colors(_index);
+      })
+      .attr('width',xScale.bandwidth())
+      .attr('height',0);
 
     g.selectAll('rect')
-    .transition()
-    .duration(500)
-    .attr('height', d=> _height - yScale(d.y))
-    .attr('y', d=>yScale(d.y));
+      .transition()
+      .duration(500)
+      .attr('height', d=> _height - yScale(d.y))
+      .attr('y', d=>yScale(d.y));
 
+    //set yAxis value
+    g.selectAll('rect')
+      .each(function (d,i) {
+        const yPos = yScale(d.y);
+        textPosY.push(yPos);
+        g.append('text')
+          .attr('class','y-value')
+          .attr('x',xScale(d.x1)+xScale.bandwidth()/2)
+          .attr('y',  _height)
+          .attr('opacity', 0)
+          .attr('dy','-0.4em')
+          .style('text-anchor','middle')
+          .style('font-size','.8em')
+          .text(d.y)
+      });
+
+    g.selectAll('.y-value')
+      .each(function (d,i) {
+        d3.select(this)
+          .transition()
+          .duration(500)
+          .attr('y', textPosY[i])
+          .attr('opacity', 1);
+      });
   }
+
+
 
   render() {
     return (
