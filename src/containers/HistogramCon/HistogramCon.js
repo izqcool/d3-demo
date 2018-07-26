@@ -325,16 +325,18 @@ export class HistogramCon extends React.Component {
     const props = {
       data,
       width:800,
-      height:300,
+      height:360,
       margin: {
-        left: 40,
+        left: 60,
         right: 40,
         top: 30,
-        bottom: 30
+        bottom: 60
       },
       isRange,
       colorStart,
-      colorEnd
+      colorEnd,
+      xName: '名称',
+      yName: '数量'
     };
     return (
         <div className={styles.container}>
