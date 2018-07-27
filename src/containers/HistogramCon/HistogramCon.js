@@ -227,7 +227,7 @@ export class HistogramCon extends React.Component {
         break;
 
       case 'X DESC':
-        newData = _.sortBy(data, (item)=>{return -item.x1});
+        newData = _.sortBy(data, (item)=>{return item.x1}).reverse();
         break;
 
       case 'Y ASC':
