@@ -17,18 +17,18 @@ export class SideBar extends React.Component {
 
   getNavs() {
     const {history: {location: {pathname}}} = this.props;
-    const path = pathname === '/' ? '/home' : pathname;
+    const path = pathname === '/' ? '/histogram' : pathname;
 
     const navs = [
       {
-        path: '/home',
-        text: '饼图',
-        imgUrl: '/assets/img/pie-chart.png',
+        path: '/histogram',
+        text: '直方图',
+        imgUrl: '/assets/img/chart-histogram.png',
         active: true
       },
       {
         path: '/pie',
-        text: '直方图',
+        text: '饼状图',
         imgUrl: '/assets/img/pie-chart.png',
         active: false
       }

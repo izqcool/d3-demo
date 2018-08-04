@@ -22,7 +22,8 @@ export class App extends React.Component {
           <SideBar history={history}/>
           <div className={styles.right}>
             <Route exact path="/" component={HistogramCon}/>
-            <Route exact path="/home" component={HistogramCon}/>
+            <Route exact path="/histogram" component={HistogramCon}/>
+            <Route exact path="/pie" component={HistogramCon}/>
           </div>
         </div>
     );
