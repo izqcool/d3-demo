@@ -5,6 +5,7 @@ import * as styles from './App.module.scss';
 
 import {SideBar} from '../SideBar';
 import {HistogramCon} from '../HistogramCon';
+import {PieCon} from '../PieCon';
 
 
 export class App extends React.Component {
@@ -23,7 +24,7 @@ export class App extends React.Component {
           <div className={styles.right}>
             <Route exact path="/" component={HistogramCon}/>
             <Route exact path="/histogram" component={HistogramCon}/>
-            <Route exact path="/pie" component={HistogramCon}/>
+            <Route exact path="/pie" component={PieCon}/>
           </div>
         </div>
     );
