@@ -1,4 +1,5 @@
 import React from 'react';
+import {Tooltip} from '../../../classes';
 import * as d3 from 'd3';
 import * as _ from 'lodash';
 import * as styles from './Histogram.module.scss';
@@ -9,6 +10,8 @@ export class Histogram extends React.Component {
   ranged = null;
   oldData = null;
   translateArr = null;
+
+  toolTip = null;
 
   originData = null;
   constructor(props) {
@@ -271,7 +274,32 @@ export class Histogram extends React.Component {
         return colors(_index);
       })
       .attr('width',xScale.bandwidth())
-      .attr('height',0);
+      .attr('height',0)
+      .on('mouseover',function (d,i) {
+        let tipText = '';
+        if(!d.x2) {
+          tipText = `${d.x1}: ${d.y}`;
+        }
+        if(d.x2) {
+          tipText = `${d.x1}~${d.x2}: ${d.y}`;
+        }
+        const {offsetX, offsetY} = d3.event;
+        const tip = new Tooltip({
+          parentDom: svg,
+          tipText: tipText
+        });
+        _this.toolTip = tip;
+        _this.toolTip.show();
+        _this.toolTip.setPos(offsetX,offsetY);
+      })
+      .on('mousemove',(d, i) => {
+        const {offsetX, offsetY} = d3.event;
+        _this.toolTip.setPos(offsetX,offsetY);
+      })
+      .on('mouseout',(d, i) => {
+        _this.toolTip.hide();
+        _this.toolTip = null;
+      });
 
     g.selectAll('rect')
       .transition()

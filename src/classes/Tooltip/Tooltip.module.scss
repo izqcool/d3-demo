@@ -1,0 +1,17 @@
+.container {
+  .show {
+    position: absolute;
+    z-index: 10000 !important;
+    width: 100px;
+    height: 100px;
+    .rect {
+      border-radius: 5px;
+    }
+
+    .text {
+      width: 100%;
+      height: 100%;
+    }
+
+  }
+}
