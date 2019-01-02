@@ -6,7 +6,7 @@ export class Tooltip {
 
   constructor(option) {
     Object.assign(this, option);
-    this.padding = 30;
+    this.padding = 20;
     this.offset= [20,20];
     this.rectWidth = 0;
     this.rectHeight = 0;
